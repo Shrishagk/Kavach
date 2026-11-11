@@ -1,0 +1,32 @@
+{
+  "_note": "Bank names, short names and IFSC prefixes. Fraud contact fields are deliberately empty: fill them ONLY from each bank's official website before relying on them. The app falls back to generic guidance when they are empty.",
+  "banks": [
+    {"name": "State Bank of India", "aliases": ["SBI", "State Bank"], "ifsc_prefix": "SBIN", "fraud_email": null, "fraud_phone": null},
+    {"name": "HDFC Bank", "aliases": ["HDFC"], "ifsc_prefix": "HDFC", "fraud_email": null, "fraud_phone": null},
+    {"name": "ICICI Bank", "aliases": ["ICICI"], "ifsc_prefix": "ICIC", "fraud_email": null, "fraud_phone": null},
+    {"name": "Axis Bank", "aliases": ["Axis"], "ifsc_prefix": "UTIB", "fraud_email": null, "fraud_phone": null},
+    {"name": "Kotak Mahindra Bank", "aliases": ["Kotak"], "ifsc_prefix": "KKBK", "fraud_email": null, "fraud_phone": null},
+    {"name": "Punjab National Bank", "aliases": ["PNB", "Punjab National"], "ifsc_prefix": "PUNB", "fraud_email": null, "fraud_phone": null},
+    {"name": "Bank of Baroda", "aliases": ["BoB", "Baroda"], "ifsc_prefix": "BARB", "fraud_email": null, "fraud_phone": null},
+    {"name": "Canara Bank", "aliases": ["Canara"], "ifsc_prefix": "CNRB", "fraud_email": null, "fraud_phone": null},
+    {"name": "Union Bank of India", "aliases": ["Union Bank"], "ifsc_prefix": "UBIN", "fraud_email": null, "fraud_phone": null},
+    {"name": "Indian Bank", "aliases": [], "ifsc_prefix": "IDIB", "fraud_email": null, "fraud_phone": null},
+    {"name": "Bank of India", "aliases": ["BOI"], "ifsc_prefix": "BKID", "fraud_email": null, "fraud_phone": null},
+    {"name": "Central Bank of India", "aliases": ["Central Bank"], "ifsc_prefix": "CBIN", "fraud_email": null, "fraud_phone": null},
+    {"name": "Indian Overseas Bank", "aliases": ["IOB"], "ifsc_prefix": "IOBA", "fraud_email": null, "fraud_phone": null},
+    {"name": "Bank of Maharashtra", "aliases": [], "ifsc_prefix": "MAHB", "fraud_email": null, "fraud_phone": null},
+    {"name": "UCO Bank", "aliases": ["UCO"], "ifsc_prefix": "UCBA", "fraud_email": null, "fraud_phone": null},
+    {"name": "Punjab & Sind Bank", "aliases": ["Punjab and Sind"], "ifsc_prefix": "PSIB", "fraud_email": null, "fraud_phone": null},
+    {"name": "Yes Bank", "aliases": ["Yes"], "ifsc_prefix": "YESB", "fraud_email": null, "fraud_phone": null},
+    {"name": "IndusInd Bank", "aliases": ["IndusInd"], "ifsc_prefix": "INDB", "fraud_email": null, "fraud_phone": null},
+    {"name": "IDFC FIRST Bank", "aliases": ["IDFC", "IDFC First"], "ifsc_prefix": "IDFB", "fraud_email": null, "fraud_phone": null},
+    {"name": "Federal Bank", "aliases": ["Federal"], "ifsc_prefix": "FDRL", "fraud_email": null, "fraud_phone": null},
+    {"name": "Karnataka Bank", "aliases": [], "ifsc_prefix": "KARB", "fraud_email": null, "fraud_phone": null},
+    {"name": "Karur Vysya Bank", "aliases": ["KVB"], "ifsc_prefix": "KVBL", "fraud_email": null, "fraud_phone": null},
+    {"name": "South Indian Bank", "aliases": [], "ifsc_prefix": "SIBL", "fraud_email": null, "fraud_phone": null},
+    {"name": "Airtel Payments Bank", "aliases": ["Airtel Bank"], "ifsc_prefix": "AIRP", "fraud_email": null, "fraud_phone": null}
+  ],
+  "keyterms_extra": ["UPI", "UTR", "RRN", "PhonePe", "Google Pay", "GPay", "Paytm", "BHIM", "IMPS", "NEFT",
+                     "CBI", "ED", "customs", "courier", "FedEx", "digital arrest", "KYC", "OTP", "AnyDesk",
+                     "Aadhaar", "PAN", "1930", "cybercrime"]
+}

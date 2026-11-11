@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="{{ lang_short }}">
+<head>
+<meta charset="utf-8">
+<title>Cyber fraud complaint draft</title>
+<style>
+{% for fam, file_r, file_b in fonts %}
+@font-face { font-family: "{{ fam }}"; src: url("{{ file_r }}"); font-weight: 400; }
+@font-face { font-family: "{{ fam }}"; src: url("{{ file_b }}"); font-weight: 700; }
+{% endfor %}
+@page { size: A4; margin: 16mm 14mm 18mm 14mm;
+  @bottom-left { content: "GoldenHour draft — not filed. Submit at cybercrime.gov.in or call 1930."; font: 7.5pt "Noto Sans"; color: #777; }
+  @bottom-right { content: "Page " counter(page) " of " counter(pages); font: 7.5pt "Noto Sans"; color: #777; } }
+body { font-family: "Noto Sans", {{ local_font_css }}; font-size: 9.6pt; color: #1b1b1b; line-height: 1.45; }
+h1 { font-size: 16pt; margin: 0 0 2px; color: #7a1f1f; }
+h2 { font-size: 11.5pt; margin: 16px 0 6px; padding-bottom: 3px; border-bottom: 1.5px solid #7a1f1f; color: #7a1f1f; }
+.sub { color: #555; font-size: 8.8pt; margin-bottom: 10px; }
+.banner { background: #fff4e5; border: 1px solid #f0b46a; padding: 8px 10px; border-radius: 4px; margin: 8px 0 10px; font-size: 9pt; }
+table { width: 100%; border-collapse: collapse; margin: 4px 0 8px; }
+th, td { border: 1px solid #ccc; padding: 4px 6px; text-align: left; vertical-align: top; }
+th { background: #f3eded; font-weight: 700; }
+td.k { width: 32%; background: #fafafa; font-weight: 700; }
+.mono { font-family: "Noto Sans", monospace; letter-spacing: 0.3px; }
+.local { font-family: {{ local_font_css }}, "Noto Sans"; }
+.missing { color: #b00020; font-style: italic; }
+.small { font-size: 8pt; color: #555; }
+.ev td { font-size: 8pt; }
+.box { border: 1px dashed #999; padding: 8px; border-radius: 4px; }
+</style>
+</head>
+<body>
+<h1>Online Financial Fraud — Complaint Draft</h1>
+<div class="sub">Prepared {{ generated_at }} IST by GoldenHour from the complainant's own statement{% if language_name != "English" %} (given in {{ language_name }}){% endif %}. Reference: {{ ref }}</div>
+
+<div class="banner"><b>Not yet filed.</b> Copy these details into the National Cybercrime Reporting Portal (cybercrime.gov.in → Report Financial Fraud) or read them out on the 1930 helpline. Check every value before submitting. Suggested portal sub-category: <b>{{ ncrp_subcategory }}</b>.</div>
+
+<h2>1. Incident summary</h2>
+<table>
+<tr><td class="k">Type of fraud</td><td>{{ scam_label }}</td></tr>
+<tr><td class="k">Total amount lost</td><td><b>{{ total }}</b> in {{ txs|length }} transaction(s)</td></tr>
+<tr><td class="k">Date of incident</td><td>{{ incident_date or '<span class="missing">not stated</span>'|safe }}</td></tr>
+<tr><td class="k">How the scammer made contact</td><td>{{ channel }}</td></tr>
+<tr><td class="k">Scammer claimed to be</td><td>{{ impersonated or '<span class="missing">not stated</span>'|safe }}</td></tr>
+<tr><td class="k">Complainant's bank / account</td><td>{{ victim_bank or '<span class="missing">not stated</span>'|safe }}{% if last4 %} (account ending {{ last4 }}){% endif %}</td></tr>
+</table>
+
+<h2>2. Transactions (money sent to the fraudster)</h2>
+<table>
+<tr><th>#</th><th>Amount</th><th>Date &amp; time</th><th>UTR / Transaction ID</th><th>Paid to (UPI ID / account)</th><th>Mode / app</th></tr>
+{% for t in txs %}
+<tr>
+<td>{{ loop.index }}</td>
+<td><b>{{ t.amount }}</b></td>
+<td>{{ t.datetime or '<span class="missing">add</span>'|safe }}</td>
+<td class="mono">{{ t.utr or '<span class="missing">add from bank SMS / app</span>'|safe }}</td>
+<td class="mono">{{ t.payee or '<span class="missing">add</span>'|safe }}</td>
+<td>{{ t.mode }}</td>
+</tr>
+{% endfor %}
+</table>
+
+<h2>3. Suspect details</h2>
+<table>
+<tr><td class="k">Phone numbers</td><td class="mono">{{ suspect_phones or '<span class="missing">none stated</span>'|safe }}</td></tr>
+<tr><td class="k">UPI IDs</td><td class="mono">{{ suspect_upis or '<span class="missing">none stated</span>'|safe }}</td></tr>
+<tr><td class="k">Bank accounts</td><td class="mono">{{ suspect_accounts or '<span class="missing">none stated</span>'|safe }}</td></tr>
+<tr><td class="k">Websites / apps / handles</td><td>{{ suspect_links or '<span class="missing">none stated</span>'|safe }}</td></tr>
+</table>
+
+<h2>4. Description of the incident (English)</h2>
+<div class="box">{{ narrative_en }}</div>
+{% if narrative_local and language_name != "English" %}
+<h2>5. Description in {{ language_name }}</h2>
+<div class="box local">{{ narrative_local }}</div>
+{% endif %}
+
+<h2>Complainant declaration</h2>
+<p class="small">The details above were given by me and read back to me for confirmation on {{ confirmed_at }}. Name, address, phone and ID details are to be entered by me directly on the portal.</p>
+
+<h2 style="page-break-before: always">Annexure A — Where each detail came from</h2>
+<p class="small">Every value in this draft is linked to the complainant's own words (transcript segment or answer) or to a payment screenshot. Values that could not be traced to a source were left out.</p>
+<table class="ev">
+<tr><th>Detail</th><th>Value</th><th>Source</th><th>Exact words / text read</th></tr>
+{% for e in evidence %}
+<tr><td>{{ e.field }}</td><td class="mono">{{ e.value }}</td><td>{{ e.source }}</td><td class="local">{{ e.quote }}</td></tr>
+{% endfor %}
+</table>
+{% if rejected %}
+<p class="small"><b>Left out for safety ({{ rejected|length }}):</b>
+{% for r in rejected %}{{ r.field }} — {{ r.reason }}{% if not loop.last %}; {% endif %}{% endfor %}</p>
+{% endif %}
+{% if screenshots %}
+<p class="small"><b>Attached evidence:</b> {{ screenshots }} payment screenshot(s) — attach the original images when filing.</p>
+{% endif %}
+</body>
+</html>

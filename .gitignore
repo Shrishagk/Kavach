@@ -1,0 +1,23 @@
+﻿# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Python virtual environments
+.venv/
+venv/
+env/
+
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.pytest-tmp/
+
+# Generated output
+var/
+smoke_out/
+
+# Local tooling
+.vscode/
+.idea/

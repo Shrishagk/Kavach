@@ -1,0 +1,2 @@
+Noto Sans fonts (Latin, Kannada, Devanagari, Tamil, Telugu, Malayalam, Bengali, Gujarati, Gurmukhi, Oriya)
+from https://github.com/notofonts — licensed under the SIL Open Font License 1.1 (https://openfontlicense.org).
