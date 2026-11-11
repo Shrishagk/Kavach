@@ -160,15 +160,17 @@ async def extract_incident(session: SessionState, gw: Gateway, settings: Setting
 
     # Use LLM_REASONING_EFFORT (low|medium|high). Chat v1 rejects "none"; low
     # keeps most of the completion budget for the JSON schema.
-    token_budgets = (settings.llm_max_tokens, max(settings.llm_max_tokens * 2, 12000))
+    token_budgets = (settings.llm_max_tokens, max(settings.llm_max_tokens * 2, settings.llm_retry_max_tokens))
     for attempt, token_budget in enumerate(token_budgets):
         try:
             res = await gw.chat(messages, model=settings.llm_model, schema=INCIDENT_SCHEMA,
                                 usage=session.usage, reasoning_effort="default",
                                 max_tokens=token_budget)
             if not res.content:
-                log.warning("empty LLM content (attempt %d; finish_reason=%s)",
-                            attempt + 1, res.finish_reason)
+                # finish_reason=length with no content means hidden reasoning used the whole
+                # budget; the next attempt gets a larger one.
+                log.warning("empty LLM content (attempt %d; finish_reason=%s; output_tokens=%d; max_tokens=%d)",
+                            attempt + 1, res.finish_reason, res.output_tokens, token_budget)
                 continue
             data = json.loads(_strip_fences(res.content))
             return parse_incident(data), "llm"

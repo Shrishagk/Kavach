@@ -25,6 +25,7 @@ from app.models.session import UsageCounters
 log = logging.getLogger("goldenhour.sarvam")
 
 RETRYABLE = {408, 409, 429, 500, 502, 503, 504}
+MAX_TIMEOUT_ATTEMPTS = 2
 # Chat Completions v1 only accepts these; the string "none" is a 400.
 _CHAT_V1_EFFORTS = {"low", "medium", "high"}
 
@@ -134,7 +135,11 @@ class SarvamGateway:
                 metrics.record(op, (time.perf_counter() - t0) * 1000, type(e).__name__)
                 if usage:
                     usage.sarvam_errors += 1
-                if attempt < self.s.sarvam_max_retries:
+                # A timed-out call already waited the full timeout; repeating it
+                # sarvam_max_retries times multiplies that wait, so retry once at most.
+                is_timeout = isinstance(e, httpx.TimeoutException)
+                limit = min(self.s.sarvam_max_retries, MAX_TIMEOUT_ATTEMPTS) if is_timeout else self.s.sarvam_max_retries
+                if attempt < limit:
                     await asyncio.sleep(delay)
                     delay *= 2
                     continue
@@ -177,6 +182,7 @@ class SarvamGateway:
         kwargs: dict[str, Any] = dict(
             messages=messages, model=model, temperature=self.s.llm_temperature,
             max_tokens=max_tokens or self.s.llm_max_tokens,
+            request_options={"timeout_in_seconds": int(self.s.llm_timeout_s)},
         )
         effort = resolve_chat_reasoning_effort(model, reasoning_effort, self.s.llm_reasoning_effort)
         if effort is not None:

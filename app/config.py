@@ -37,6 +37,12 @@ class Settings(BaseSettings):
     llm_model: str = "sarvam-105b"
     llm_reasoning_effort: Literal["low", "medium", "high"] = "low"
     llm_max_tokens: int = 6000
+    # sarvam-105b spends part of the completion budget on hidden reasoning; when the first
+    # attempt ends with finish_reason=length and no content, extraction retries with this.
+    llm_retry_max_tokens: int = 12000
+    # Chat generations of several thousand tokens routinely outlast the 60s default used for
+    # STT/TTS, so a ReadTimeout there is what pushed live runs to the baseline extractor.
+    llm_timeout_s: float = 180.0
     llm_temperature: float = 0.1
 
     vision_mode: Literal["auto", "doc_ai", "llm"] = "auto"
