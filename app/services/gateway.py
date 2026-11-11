@@ -25,6 +25,23 @@ from app.models.session import UsageCounters
 log = logging.getLogger("goldenhour.sarvam")
 
 RETRYABLE = {408, 409, 429, 500, 502, 503, 504}
+# Chat Completions v1 only accepts these; the string "none" is a 400.
+_CHAT_V1_EFFORTS = {"low", "medium", "high"}
+
+
+def resolve_chat_reasoning_effort(model: str, reasoning_effort: str | None, configured: str) -> str | None:
+    """Return the value to send, or None to omit the field.
+
+    Gemma 4 reasons only when the field is set, so None/none omits it.
+    Sarvam 105B's v1 endpoint requires low|medium|high; omitting the field
+    can spend the completion budget on hidden reasoning before any JSON.
+    """
+    effort = configured if reasoning_effort == "default" else reasoning_effort
+    if effort in (None, "none"):
+        if str(model).startswith("sarvam-105b"):
+            return configured if configured in _CHAT_V1_EFFORTS else "low"
+        return None
+    return effort
 
 
 class SarvamServiceError(Exception):
@@ -161,16 +178,9 @@ class SarvamGateway:
             messages=messages, model=model, temperature=self.s.llm_temperature,
             max_tokens=max_tokens or self.s.llm_max_tokens,
         )
-        # `None` omits the reasoning setting; the default sentinel uses config.
-        effort = self.s.llm_reasoning_effort if reasoning_effort == "default" else reasoning_effort
-        # Gemma 4 defaults to no reasoning when omitted.  Sarvam 105B exposes
-        # a literal ``"none"`` mode; sending JSON null lets the service apply
-        # its default reasoning budget instead.  That budget can consume the
-        # whole completion allowance before the JSON is emitted.
+        effort = resolve_chat_reasoning_effort(model, reasoning_effort, self.s.llm_reasoning_effort)
         if effort is not None:
             kwargs["reasoning_effort"] = effort
-        elif model.startswith("sarvam-105b"):
-            kwargs["reasoning_effort"] = "none"
         if schema:
             kwargs["response_format"] = {"type": "json_schema", "json_schema": schema}
         fn = self.client.chat.completions_v2 if api == "v2" else self.client.chat.completions
